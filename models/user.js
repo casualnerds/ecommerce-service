@@ -52,7 +52,7 @@ const userSchema = new Schema({
     },
     profile_picture: {
         type: String,
-        // required: true
+        default: ''
     },
     isAdmin: {
         type: Boolean,

@@ -51,14 +51,16 @@ const userSchema = new Schema({
         ]
     },
     profile_picture: {
-        type: String,
-        default: ''
+        type: Object
+        // required: [true, 'Image required']
     },
     isAdmin: {
         type: Boolean,
         default: false
     }
 
+}, {
+    timestamps: true
 })
 
 userSchema.pre('save', function (next) {

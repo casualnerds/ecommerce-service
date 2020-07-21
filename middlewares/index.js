@@ -1,9 +1,10 @@
 const errorHandler = require('./errorHandlers');
 const { authenticate } = require('./authenticate');
-const { authorization } = require('./authorize');
+const { authorizationIsAdmin, authorizationUpdateAndDelete } = require('./authorize');
 
 module.exports = {
     errorHandler,
     authenticate,
-    authorization
+    authorizationIsAdmin,
+    authorizationUpdateAndDelete
 }

@@ -1,12 +1,10 @@
 const User = require('../models/user')
 const Helper = require('../helpers/helper')
 module.exports = {
-    authorization(req, res, next) {
+    authorizationIsAdmin(req, res, next) {
         console.log('masuk authorize')
         try {
-            if (req.headers.hasOwnProperty('token')) {
-                let decode = Helper.verifyJWT(req.headers.token)
-                req.decode = decode
+            if (req.decode) {
                 User.findOne({ email: req.decode.email })
                     .then(user => {
                         if (user) {
@@ -26,6 +24,21 @@ module.exports = {
         } catch (error) {
             res.status(401).json('Error')
         }
+    },
+    authorizationUpdateAndDelete(req, res, next) {
+        User.findById(req.params.id)
+            .then(user => {
+                if (!user) {
+                    res.status(404).json('User not found')
+                } else {
+                    if (req.decode.id == user.id) {
+                        next()
+                    } else {
+                        res.status(403).json('Not Authorized')
+                    }
+                }
+            })
+            .catch(next)
     }
 }
 

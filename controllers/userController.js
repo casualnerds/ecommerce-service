@@ -4,18 +4,20 @@ const Helper = require('../helpers/helper')
 class UserController {
 
     static signup(req, res, next) {
+        const picture = req.file.originalname
         let option = {
             username: req.body.username,
             first_name: req.body.first_name,
             last_name: req.body.last_name,
             password: req.body.password,
             email: req.body.email,
-            profile_picture: req.body.profile_picture,
-            isAdmin: req.body.isAdmin
+            profile_picture: picture,
         }
 
+        console.log(picture + '<===');
         User.create(option)
             .then(data => {
+
                 res.status(201).json(data)
             })
             .catch(next)
@@ -61,14 +63,15 @@ class UserController {
     }
 
     static create(req, res, next) {
+        const picture = req.file
         let option = {
             username: req.body.username,
             first_name: req.body.first_name,
             last_name: req.body.last_name,
             password: req.body.password,
             email: req.body.email,
-            profile_picture: req.body.profile_picture,
-            isAdmin: req.body.isAdmin
+            profile_picture: picture,
+            isAdmin: true
         }
 
         User.create(option)
@@ -83,25 +86,16 @@ class UserController {
 
     static update(req, res, next) {
         const userId = req.params.id
-        User.findById(userId)
-            .then(user => {
-                if (user) {
-                    let option = {
-                        username: req.body.username,
-                        first_name: req.body.first_name,
-                        last_name: req.body.last_name,
-                        password: req.body.password,
-                        email: req.body.email,
-                        profile_picture: req.body.profile_picture,
-                        isAdmin: req.body.isAdmin
-                    }
+        let option = {
+            username: req.body.username,
+            first_name: req.body.first_name,
+            last_name: req.body.last_name,
+            password: Helper.hashPassword(req.body.password),
+            email: req.body.email,
+            profile_picture: req.body.profile_picture,
+        }
 
-
-                    return user.updateOne(option)
-                } else {
-                    res.status(401).json('User not found')
-                }
-            })
+        User.findByIdAndUpdate(userId, option)
             .then(user => {
                 res.status(201).json({
                     data: user,

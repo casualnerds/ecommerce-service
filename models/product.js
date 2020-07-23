@@ -21,6 +21,11 @@ const productSchema = new Schema({
     rating: {
         type: Number,
         default: 0
+    },
+    userId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     }
 }, {
     timestamps: true

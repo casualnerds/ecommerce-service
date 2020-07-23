@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const User = require('../models/user')
 const Product = require('../models/product')
 const Helper = require('../helpers/helper')
@@ -128,7 +128,8 @@ class UserController {
             description: req.body.description,
             price: +req.body.price,
             image_url: image,
-            rating: +req.body.rating
+            rating: +req.body.rating,
+            userId: req.decode.id
         }
 
         Product.create(option)
@@ -143,6 +144,8 @@ class UserController {
 
     static getProducts(req, res, next) {
         Product.find({})
+            // .select('name price -_id')
+            .populate('userId')
             .sort({
                 createdAt: -1
             })
@@ -177,6 +180,39 @@ class UserController {
         Product.findByIdAndRemove({ _id: req.params.productId })
             .then(prod => {
                 res.status(200).json('Product Deleted')
+            })
+            .catch(next)
+    }
+
+
+    static addCart(req, res, next) {
+        const prodId = req.params.productId
+
+        let prodData = null
+        Product.findById(prodId)
+            .then(prod => {
+                if (prod) {
+                    prodData = prod
+                    return User.findById(req.decode.id)
+                } else {
+                    res.status(401).json("Product not found")
+                }
+            })
+            .then(user => {
+                console.log(user);
+
+                if (user) {
+                    return user.addToCart(prodData)
+                } else {
+                    res.status(401).json("User not found")
+                }
+
+            })
+            .then(result => {
+                res.status(200).json({
+                    data: result,
+                    message: 'Item added to cart'
+                })
             })
             .catch(next)
     }

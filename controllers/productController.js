@@ -4,6 +4,7 @@ class ProductController {
 
     static getProducts(req, res, next) {
         Product.find({})
+            // .populate('userId')
             .sort({
                 createdAt: -1
             })

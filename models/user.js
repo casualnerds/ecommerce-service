@@ -57,7 +57,8 @@ const userSchema = new Schema({
     isAdmin: {
         type: Boolean,
         default: false
-    },
+    }
+    ,
     cart: {
         items: [
             {
@@ -98,6 +99,15 @@ userSchema.methods.addToCart = function (product) {
     }
 
     this.cart = updatedCart
+    return this.save()
+}
+
+userSchema.methods.removeFromCart = function (productId) {
+    const updateCartItems = this.cart.items.filter(item => {
+        return item.productId.toString() !== productId.toString()
+    })
+
+    this.cart.items = updateCartItems
     return this.save()
 }
 
